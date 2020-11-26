@@ -2,6 +2,13 @@
 
 YQXX 初版，本项目仍在快速开发、迭代、解耦合中。。
 
+## 如何使用
+
+0. `pip install -r requirements.txt`
+1. 按需修改 `config.py` 中的内容
+2. 复制 `config.example.py` 到 `config.py`
+3. 运行 `python main.py`
+
 ## LICENSE
 
 [AGPL-3.0](LICENSE)
