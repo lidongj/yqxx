@@ -4,10 +4,26 @@ YQXX 初版，本项目仍在快速开发、迭代、解耦合中。。
 
 ## 如何使用
 
-0. `pip install -r requirements.txt`
-1. 按需修改 `config.py` 中的内容
-2. 复制 `config.example.py` 到 `config.py`
-3. 运行 `python main.py`
+0. `pip install yqxx`
+1. 按照下面模板填写账号密码等信息
+2. 运行 `yqxx -c <配置文件名>`
+
+如需定时执行，请自行配置任务计划（Windows）或 Cron 任务（Linux）
+
+## 配置文件模板
+
+配置文件为 YAML 格式，对配置文件进行编辑后保存到本地：
+
+```yaml
+# 统一身份认证账号
+username: '1234567890'
+# 统一身份认证密码
+password: 'PASSWORD'
+# 体温
+brzgtw: '36.5'
+# 国（境）内详细地址
+gnxxdz: '哈尔滨工业大学一校区A03公寓'
+```
 
 ## LICENSE
 

@@ -1,5 +1,6 @@
-import random
 import base64
+import random
+
 from Crypto.Cipher import AES
 
 BLOCK_SIZE = 16

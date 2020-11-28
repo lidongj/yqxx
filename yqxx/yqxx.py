@@ -1,3 +1,4 @@
+import argparse
 import base64
 import json
 import logging
@@ -7,15 +8,35 @@ import urllib
 from datetime import date
 
 import requests
+import yaml
 from bs4 import BeautifulSoup
 
-from config import *
-from utils import encrypt, rds
+from .utils import encrypt, rds
 
 logging.basicConfig(level=logging.INFO)
 
 
+def read_config(filename: str):
+    try:
+        logging.info("Reading config from %s" % filename)
+        o = open(filename, 'r')
+        c = yaml.load(o, Loader=yaml.SafeLoader)
+        ret = (c['username'], c['password'], c['brzgtw'], c['gnxxdz'])
+        return ret
+    except OSError:
+        logging.error('Fail to read configuration from %s' % filename)
+    except yaml.YAMLError:
+        logging.error('Fail to parse YAML')
+    exit(1)
+
+
 def main():
+    parser = argparse.ArgumentParser(
+        prog='yqxx', description='Auto submitter for xg.hit.edu.cn yqxx')
+    parser.add_argument('-c', '--conf-file',
+                        help='Set config file path', required=True)
+    args = parser.parse_args()
+    (username, password, brzgtw, gnxxdz) = read_config(args.conf_file)
     s = requests.Session()
     s.headers.update({
         'User-Agent': 'Mozilla/5.0 (Linux; Android 10; Redmi K30) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.110 Mobile Safari/537.36'
@@ -63,7 +84,8 @@ def main():
         r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/getYqxxList')
         yqxxlist = json.loads(r.text)
         if yqxxlist['isSuccess'] == False:
-            logging.error('Fail to getYqxxList, msg: %s' % yqxxlist['msg'])
+            logging.error(
+                'Fail to getYqxxList, msg: %s' % yqxxlist['msg'])
             exit(1)
         yqxxlist = yqxxlist['module']['data']
         for i in yqxxlist:

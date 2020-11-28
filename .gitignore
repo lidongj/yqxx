@@ -1,6 +1,8 @@
 # Project related files
-/config.py
+/yqxx.yml
 
+# VSCode related
+/.vscode
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
