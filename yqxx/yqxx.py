@@ -6,7 +6,7 @@ import random
 import re
 import urllib
 from datetime import date
-
+from typing import Tuple
 import requests
 import yaml
 from bs4 import BeautifulSoup
@@ -16,7 +16,7 @@ from .utils import encrypt, rds
 logging.basicConfig(level=logging.INFO)
 
 
-def read_config(filename: str):
+def read_config(filename: str) -> Tuple[str, str, str, str]:
     try:
         logging.info("Reading config from %s" % filename)
         o = open(filename, 'r')
