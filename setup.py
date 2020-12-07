@@ -36,7 +36,7 @@ setup(
     package_dir={'yqxx': 'yqxx'},
     packages=find_packages('.'),
     python_requires='>=3.5, <4',
-    install_requires=['beautifulsoup4', 'pycryptodome', 'requests', 'PyYAML'],
+    install_requires=['beautifulsoup4', 'pycryptodome', 'requests', 'PyYAML', 'hitutil'],
     entry_points={
         'console_scripts': [
             'yqxx=yqxx:main',

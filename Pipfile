@@ -8,6 +8,7 @@ requests = "*"
 pycryptodome = "*"
 beautifulsoup4 = "*"
 pyyaml = "*"
+hitutil = "*"
 
 [dev-packages]
 pylint = "*"

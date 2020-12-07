@@ -10,9 +10,11 @@ from typing import Tuple
 import requests
 import yaml
 from bs4 import BeautifulSoup
+import traceback
 
-from .utils import encrypt, rds
 
+# from .utils import encrypt, rds
+from hit.ids.login import idslogin
 logging.basicConfig(level=logging.INFO)
 
 
@@ -37,42 +39,23 @@ def main():
                         help='Set config file path', required=True)
     args = parser.parse_args()
     (username, password, brzgtw, gnxxdz) = read_config(args.conf_file)
-    s = requests.Session()
+    logging.info('Logging in to xg.hit.edu.cn')
+    try:
+        s = idslogin(username, password)
+    except Exception as e:
+        logging.error('Failed while logging in')
+        logging.error(e)
+        exit(1)
+    # s = requests.Session()
     s.headers.update({
         'User-Agent': 'Mozilla/5.0 (Linux; Android 10; Redmi K30) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.110 Mobile Safari/537.36'
     })
-    # Login via ids.hit.edu.cn
     r = s.get('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/common')
-    logging.info('Logging in to xg.hit.edu.cn')
-    pwd_default_encrypt_salt = re.compile(
-        'pwdDefaultEncryptSalt = "(.*)"').search(r.text).groups()[0]
-    logging.debug('pwdDefaultEncryptSalt: %s' % pwd_default_encrypt_salt)
-    passwordEncrypt = encrypt(
-        rds(64).encode()+password.encode(), pwd_default_encrypt_salt.encode())
-    logging.debug(passwordEncrypt.decode())
-    soup = BeautifulSoup(r.text, 'html.parser')
-    # Detect Captcha
-    _ = s.get('http://ids.hit.edu.cn/authserver/needCaptcha.html?username=%s&pwdEncrypt2=pwdEncryptSalt' % username)
-    if _.text == 'true':
-        logging.error('Fail: Captcha needed')
-        exit(1)
-    logging.info('OK: No captcha is needed')
-    r = s.post(r.url, data={
-        "username": username,
-        "password": passwordEncrypt,
-        "captchaResponse": None,
-        "lt": soup.find('input', {'name': 'lt'})['value'],
-        "dllt": soup.find('input', {'name': 'dllt'})['value'],
-        "execution": soup.find('input', {'name': 'execution'})['value'],
-        "_eventId": soup.find('input', {'name': '_eventId'})['value'],
-        "rmShown": soup.find('input', {'name': 'rmShown'})['value'],
-        "pwdDefaultEncryptSalt": pwd_default_encrypt_salt
-    })
     _ = urllib.parse.urlparse(r.url)
     if _.hostname != 'xg.hit.edu.cn':
         logging.error('Login failed')
         exit(1)
-    logging.info("Login success")
+    logging.info('Login success')
     r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/csh')
     _ = json.loads(r.text)
     if _['isSuccess'] == True:
