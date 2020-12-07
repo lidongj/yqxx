@@ -4,17 +4,16 @@ import json
 import logging
 import random
 import re
+import traceback
 import urllib
 from datetime import date
 from typing import Tuple
+
 import requests
 import yaml
 from bs4 import BeautifulSoup
-import traceback
-
-
-# from .utils import encrypt, rds
 from hit.ids.login import idslogin
+
 logging.basicConfig(level=logging.INFO)
 
 
