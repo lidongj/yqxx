@@ -17,7 +17,7 @@ from hit.ids.login import idslogin
 logging.basicConfig(level=logging.INFO)
 
 
-def read_config(filename: str) -> Tuple[str, str, str, str]:
+def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
     try:
         logging.info("Reading config from %s" % filename)
         o = open(filename, 'r')
