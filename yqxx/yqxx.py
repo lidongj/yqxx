@@ -22,6 +22,10 @@ def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
         logging.info("Reading config from %s" % filename)
         o = open(filename, 'r')
         c = yaml.load(o, Loader=yaml.SafeLoader)
+        if 'dqztm' not in c:
+            c['dqztm'] = '01'
+        if 'dqszdqu' not in c:
+            c['dqszdqu'] = '230103'
         ret = (c['username'], c['password'], c['brzgtw'],
                c['gnxxdz'], c['dqztm'], c['dqszdqu'])
         return ret
