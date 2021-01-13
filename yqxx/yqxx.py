@@ -17,12 +17,17 @@ from hit.ids.login import idslogin
 logging.basicConfig(level=logging.INFO)
 
 
-def read_config(filename: str) -> Tuple[str, str, str, str]:
+def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
     try:
         logging.info("Reading config from %s" % filename)
         o = open(filename, 'r')
         c = yaml.load(o, Loader=yaml.SafeLoader)
-        ret = (c['username'], c['password'], c['brzgtw'], c['gnxxdz'])
+        if 'dqztm' not in c:
+            c['dqztm'] = '01'
+        if 'dqszdqu' not in c:
+            c['dqszdqu'] = '230103'
+        ret = (c['username'], c['password'], c['brzgtw'],
+               c['gnxxdz'], c['dqztm'], c['dqszdqu'])
         return ret
     except OSError:
         logging.error('Fail to read configuration from %s' % filename)
@@ -37,7 +42,8 @@ def main():
     parser.add_argument('-c', '--conf-file',
                         help='Set config file path', required=True)
     args = parser.parse_args()
-    (username, password, brzgtw, gnxxdz) = read_config(args.conf_file)
+    (username, password, brzgtw,
+     gnxxdz, dqztm, dqszdqu) = read_config(args.conf_file)
     logging.info('Logging in to xg.hit.edu.cn')
     try:
         s = idslogin(username, password)
@@ -97,11 +103,11 @@ def main():
                 "brzdjlm": "",  # 诊断结论
                 "brzgtw": brzgtw,  # 体温
                 "dqszd": "01",  # 01 国（境）内, 02 海外
-                "dqszdqu": "230103",  # 当前所在区
-                "dqszdsheng": "230000",  # 当前所在省
-                "dqszdshi": "230100",  # 当前所在市/县
+                "dqszdqu": dqszdqu,  # 当前所在区
+                "dqszdsheng": str(dqszdqu[:2]) + '0000',  # 当前所在省
+                "dqszdshi": str(dqszdqu[:4]) + '00',  # 当前所在市/县
                 "dqztbz": "",  # 备注
-                "dqztm": "01",  # 当前状态 01 在校（校内宿舍住）, 03 居家, 04 探亲, 05 访友, 06 旅行, 07 会议, 99 其他
+                "dqztm": dqztm,  # 当前状态 01 在校（校内宿舍住）, 03 居家, 04 探亲, 05 访友, 06 旅行, 07 会议, 99 其他
                 "gnxxdz": gnxxdz,  # 国（境）内详细地址
                 "gpsxx": "",  # GPS
                 "hwcs": "",  # 海外城市
