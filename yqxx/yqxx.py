@@ -104,8 +104,8 @@ def main():
                 "brzgtw": brzgtw,  # 体温
                 "dqszd": "01",  # 01 国（境）内, 02 海外
                 "dqszdqu": dqszdqu,  # 当前所在区
-                "dqszdsheng": str(dqszdqu[:2]) + '0000',  # 当前所在省
-                "dqszdshi": str(dqszdqu[:4]) + '00',  # 当前所在市/县
+                "dqszdsheng": str(dqszdqu)[:2] + '0000',  # 当前所在省
+                "dqszdshi": str(dqszdqu)[:4] + '00',  # 当前所在市/县
                 "dqztbz": "",  # 备注
                 "dqztm": dqztm,  # 当前状态 01 在校（校内宿舍住）, 03 居家, 04 探亲, 05 访友, 06 旅行, 07 会议, 99 其他
                 "gnxxdz": gnxxdz,  # 国（境）内详细地址
