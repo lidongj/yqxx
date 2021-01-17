@@ -8,7 +8,7 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='yqxx',
-    version='0.2.2',
+    version='0.2.3',
     description='Auto submitter for xg.hit.edu.cn yqxx',
     long_description=long_description,
     long_description_content_type='text/markdown',
