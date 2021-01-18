@@ -28,7 +28,7 @@ def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
             c['dqszdqu'] = '230103'
         for k in c:
             c[k] = str(c[k])
-        c['dqztm'].zfill(2)
+        c['dqztm'] = c['dqztm'].zfill(2)
         ret = (c['username'], c['password'], c['brzgtw'],
                c['gnxxdz'], c['dqztm'], c['dqszdqu'])
         logging.debug(ret)
