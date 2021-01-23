@@ -20,7 +20,7 @@ logging.basicConfig(level=logging.INFO)
 def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
     try:
         logging.info("Reading config from %s" % filename)
-        o = open(filename, 'r')
+        o = open(filename, 'r', encoding='utf-8')
         c = yaml.load(o, Loader=yaml.SafeLoader)
         if 'dqztm' not in c:
             c['dqztm'] = '01'
