@@ -9,7 +9,6 @@ from typing import Tuple
 import yaml
 from hit.ids.login import idslogin
 
-logging.basicConfig(level=logging.INFO)
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +42,14 @@ def main():
     parser.add_argument('-c', '--conf-file',
                         help='Set config file path',
                         required=True)
+    parser.add_argument('-d', '--debug',
+                        help='Set debug mode on',
+                        action='store_true')
     args = parser.parse_args()
+    if args.debug:
+        logging.basicConfig(level=logging.DEBUG)
+    else:
+        logging.basicConfig(level=logging.INFO)
     (username, password, brzgtw,
      gnxxdz, dqztm, dqszdqu) = read_config(args.conf_file)
     logger.info('Logging in to xg.hit.edu.cn')
