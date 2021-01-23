@@ -9,7 +9,6 @@ from typing import Tuple
 import yaml
 from hit.ids.login import idslogin
 
-
 logger = logging.getLogger(__name__)
 
 
@@ -45,6 +44,9 @@ def main():
     parser.add_argument('-d', '--debug',
                         help='Set debug mode on',
                         action='store_true')
+    parser.add_argument('-f', '--force',
+                        help='Override previous yqxx if available',
+                        action='store_true')
     args = parser.parse_args()
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
@@ -79,6 +81,7 @@ def main():
         module = ''
         r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/getYqxxList')
         yqxxlist = json.loads(r.text)
+        logger.debug(yqxxlist)
         if not yqxxlist['isSuccess']:
             logger.error(
                 'Fail to getYqxxList, msg: %s', yqxxlist['msg'])
@@ -86,17 +89,23 @@ def main():
         yqxxlist = yqxxlist['module']['data']
         for i in yqxxlist:
             if i['rq'] == date.today().isoformat():
-                logger.info('Find previously created yqxx.')
-                if i['zt'] != '00':
-                    # 已提交
-                    # Don't need to do anything
-                    logger.error("You have already submitted yqxx, EXITING!")
-                    sys.exit(0)
-                else:
+                if i['zt'] == '00':  # 未提交
                     module = i['id']
                     logger.info("Using previously created yqxx")
                     logger.debug("yqxx id: %s", module)
-                    break
+                elif i['zt'] == '01':  # 待辅导员审核
+                    if args.force:
+                        logger.info("You have already submitted yqxx")
+                        module = i['id']
+                        logger.info("Using previously created yqxx")
+                        logger.debug("yqxx id: %s", module)
+                    else:
+                        logger.error("Find previously created yqxx, EXITING!")
+                        sys.exit(0)
+                else:  # 辅导员审核成功 当前状态不可提交！
+                    logger.info("You cannot submit at this time!")
+                    sys.exit(0)
+                break
     if not module:
         logger.error('Could not find yqxx!')
         sys.exit(1)
