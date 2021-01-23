@@ -11,10 +11,12 @@ from hit.ids.login import idslogin
 
 logging.basicConfig(level=logging.INFO)
 
+logger = logging.getLogger(__name__)
+
 
 def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
     try:
-        logging.info("Reading config from %s", filename)
+        logger.info("Reading config from %s", filename)
         o = open(filename, 'r', encoding='utf-8')
         c = yaml.load(o, Loader=yaml.SafeLoader)
         if 'dqztm' not in c:
@@ -26,12 +28,12 @@ def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
         c['dqztm'] = c['dqztm'].zfill(2)
         ret = (c['username'], c['password'], c['brzgtw'],
                c['gnxxdz'], c['dqztm'], c['dqszdqu'])
-        logging.debug(ret)
+        logger.debug(ret)
         return ret
     except OSError:
-        logging.error('Fail to read configuration from %s', filename)
+        logger.error('Fail to read configuration from %s', filename)
     except yaml.YAMLError:
-        logging.error('Fail to parse YAML')
+        logger.error('Fail to parse YAML')
     sys.exit(1)
 
 
@@ -39,16 +41,17 @@ def main():
     parser = argparse.ArgumentParser(
         prog='yqxx', description='Auto submitter for xg.hit.edu.cn yqxx')
     parser.add_argument('-c', '--conf-file',
-                        help='Set config file path', required=True)
+                        help='Set config file path',
+                        required=True)
     args = parser.parse_args()
     (username, password, brzgtw,
      gnxxdz, dqztm, dqszdqu) = read_config(args.conf_file)
-    logging.info('Logging in to xg.hit.edu.cn')
+    logger.info('Logging in to xg.hit.edu.cn')
     try:
         s = idslogin(username, password)
     except Exception as e:
-        logging.error('Failed while logging in')
-        logging.error(e)
+        logger.error('Failed while logging in')
+        logger.error(e)
         sys.exit(1)
     # s = requests.Session()
     s.headers.update({
@@ -57,39 +60,39 @@ def main():
     r = s.get('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/common')
     _ = urllib.parse.urlparse(r.url)
     if _.hostname != 'xg.hit.edu.cn':
-        logging.error('Login failed')
+        logger.error('Login failed')
         sys.exit(1)
-    logging.info('Login success')
+    logger.info('Login success')
     r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/csh')
     _ = json.loads(r.text)
     if _['isSuccess']:
         module = _['module']
-        logging.info("Successfully created yqxx")
-        logging.debug("yqxx id: %s", module)
+        logger.info("Successfully created yqxx")
+        logger.debug("yqxx id: %s", module)
     else:
         module = ''
         r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/getYqxxList')
         yqxxlist = json.loads(r.text)
         if not yqxxlist['isSuccess']:
-            logging.error(
+            logger.error(
                 'Fail to getYqxxList, msg: %s', yqxxlist['msg'])
             sys.exit(1)
         yqxxlist = yqxxlist['module']['data']
         for i in yqxxlist:
             if i['rq'] == date.today().isoformat():
-                logging.info('Find previously created yqxx.')
+                logger.info('Find previously created yqxx.')
                 if i['zt'] != '00':
                     # 已提交
                     # Don't need to do anything
-                    logging.error("You have already submitted yqxx, EXITING!")
+                    logger.error("You have already submitted yqxx, EXITING!")
                     sys.exit(0)
                 else:
                     module = i['id']
-                    logging.info("Using previously created yqxx")
-                    logging.debug("yqxx id: %s", module)
+                    logger.info("Using previously created yqxx")
+                    logger.debug("yqxx id: %s", module)
                     break
     if not module:
-        logging.error('Could not find yqxx!')
+        logger.error('Could not find yqxx!')
         sys.exit(1)
     data = {
         'info': json.dumps({
@@ -129,16 +132,16 @@ def main():
             }
         })
     }
-    logging.debug("data: %s", data['info'])
+    logger.debug("data: %s", data['info'])
     r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/saveYqxx', data=data)
-    logging.debug(r.text)
+    logger.debug(r.text)
     j = json.loads(r.text)
     if j['isSuccess']:
-        logging.info("saveYqxx: Success")
+        logger.info("saveYqxx: Success")
     else:
-        logging.error("saveYqxx: Failed")
+        logger.error("saveYqxx: Failed")
         sys.exit(1)
-    logging.debug(j)
+    logger.debug(j)
     return
 
 
