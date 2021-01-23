@@ -1,17 +1,12 @@
 import argparse
-import base64
 import json
 import logging
-import random
-import re
-import traceback
+import sys
 import urllib
 from datetime import date
 from typing import Tuple
 
-import requests
 import yaml
-from bs4 import BeautifulSoup
 from hit.ids.login import idslogin
 
 logging.basicConfig(level=logging.INFO)
@@ -19,7 +14,7 @@ logging.basicConfig(level=logging.INFO)
 
 def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
     try:
-        logging.info("Reading config from %s" % filename)
+        logging.info("Reading config from %s", filename)
         o = open(filename, 'r', encoding='utf-8')
         c = yaml.load(o, Loader=yaml.SafeLoader)
         if 'dqztm' not in c:
@@ -34,10 +29,10 @@ def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
         logging.debug(ret)
         return ret
     except OSError:
-        logging.error('Fail to read configuration from %s' % filename)
+        logging.error('Fail to read configuration from %s', filename)
     except yaml.YAMLError:
         logging.error('Fail to parse YAML')
-    exit(1)
+    sys.exit(1)
 
 
 def main():
@@ -54,7 +49,7 @@ def main():
     except Exception as e:
         logging.error('Failed while logging in')
         logging.error(e)
-        exit(1)
+        sys.exit(1)
     # s = requests.Session()
     s.headers.update({
         'User-Agent': 'Mozilla/5.0 (Linux; Android 10; Redmi K30) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.110 Mobile Safari/537.36'
@@ -63,22 +58,22 @@ def main():
     _ = urllib.parse.urlparse(r.url)
     if _.hostname != 'xg.hit.edu.cn':
         logging.error('Login failed')
-        exit(1)
+        sys.exit(1)
     logging.info('Login success')
     r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/csh')
     _ = json.loads(r.text)
-    if _['isSuccess'] == True:
+    if _['isSuccess']:
         module = _['module']
         logging.info("Successfully created yqxx")
-        logging.debug("yqxx id: %s" % module)
+        logging.debug("yqxx id: %s", module)
     else:
         module = ''
         r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/getYqxxList')
         yqxxlist = json.loads(r.text)
-        if yqxxlist['isSuccess'] == False:
+        if not yqxxlist['isSuccess']:
             logging.error(
-                'Fail to getYqxxList, msg: %s' % yqxxlist['msg'])
-            exit(1)
+                'Fail to getYqxxList, msg: %s', yqxxlist['msg'])
+            sys.exit(1)
         yqxxlist = yqxxlist['module']['data']
         for i in yqxxlist:
             if i['rq'] == date.today().isoformat():
@@ -87,15 +82,15 @@ def main():
                     # 已提交
                     # Don't need to do anything
                     logging.error("You have already submitted yqxx, EXITING!")
-                    exit(0)
+                    sys.exit(0)
                 else:
                     module = i['id']
                     logging.info("Using previously created yqxx")
-                    logging.debug("yqxx id: %s" % module)
+                    logging.debug("yqxx id: %s", module)
                     break
     if not module:
         logging.error('Could not find yqxx!')
-        exit(1)
+        sys.exit(1)
     data = {
         'info': json.dumps({
             "model": {
@@ -134,15 +129,15 @@ def main():
             }
         })
     }
-    logging.debug("data: %s" % data['info'])
+    logging.debug("data: %s", data['info'])
     r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/saveYqxx', data=data)
     logging.debug(r.text)
     j = json.loads(r.text)
-    if j['isSuccess'] == True:
+    if j['isSuccess']:
         logging.info("saveYqxx: Success")
     else:
         logging.error("saveYqxx: Failed")
-        exit(1)
+        sys.exit(1)
     logging.debug(j)
     return
 
