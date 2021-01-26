@@ -12,20 +12,14 @@ from hit.ids.login import idslogin
 logger = logging.getLogger(__name__)
 
 
-def read_config(filename: str) -> Tuple[str, str, str, str, str, str]:
+def read_config(filename: str) -> Tuple[str, str, str]:
     try:
         logger.info("Reading config from %s", filename)
         o = open(filename, 'r', encoding='utf-8')
         c = yaml.load(o, Loader=yaml.SafeLoader)
-        if 'dqztm' not in c:
-            c['dqztm'] = '01'
-        if 'dqszdqu' not in c:
-            c['dqszdqu'] = '230103'
         for k in c:
             c[k] = str(c[k])
-        c['dqztm'] = c['dqztm'].zfill(2)
-        ret = (c['username'], c['password'], c['brzgtw'],
-               c['gnxxdz'], c['dqztm'], c['dqszdqu'])
+        ret = (c['username'], c['password'], c['gnxxdz'])
         logger.debug(ret)
         return ret
     except OSError:
@@ -52,8 +46,7 @@ def main():
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
-    (username, password, brzgtw,
-     gnxxdz, dqztm, dqszdqu) = read_config(args.conf_file)
+    (username, password, gnxxdz) = read_config(args.conf_file)
     logger.info('Logging in to xg.hit.edu.cn')
     try:
         s = idslogin(username, password)
@@ -113,50 +106,45 @@ def main():
         'info': json.dumps({
             "model": {
                 "id": module,
-                "brfsgktt": "0",  # 发烧、干咳、头痛现象
-                "brjyyymc": "",  # 医院名称
-                "brsfjy": "",  # 是否就医
-                "brzdjlbz": "",  # 诊断结论备注
-                "brzdjlm": "",  # 诊断结论
-                "brzgtw": brzgtw,  # 体温
+                "brfsgktt": "0",  # 是否有发烧、干咳、头痛等症状？
+                "brsfgl": "0",  # 本人是否处于隔离期？
+                "brsfjy": "0",  # 是否就医
+                "brsflt": "0",  # 本人是否被社区、疾控中心等部门流调？
+                "brsfmqjc": "0",  # 本人是否为密切接触者或二次密切接触者？
+                "brsfqzbl": "0",  # 本人是否确诊病例？
+                "brsfwzzbl": "0",  # 本人是否无症状病例？
+                "brzdjlbz": "",  # 医院诊断结果
                 "dqszd": "01",  # 01 国（境）内, 02 海外
-                "dqszdqu": dqszdqu,  # 当前所在区
-                "dqszdsheng": dqszdqu[:2] + '0000',  # 当前所在省
-                "dqszdshi": dqszdqu[:4] + '00',  # 当前所在市/县
-                "dqztbz": "",  # 备注
-                "dqztm": dqztm,  # 当前状态 01 在校（校内宿舍住）, 03 居家, 04 探亲, 05 访友, 06 旅行, 07 会议, 99 其他
-                "gnxxdz": gnxxdz,  # 国（境）内详细地址
-                "gpsxx": "",  # GPS
+                "gllx": "",  # 隔离类型
+                "glyy": "",  # 隔离原因
+                "glyybz": "",  # 其他原因
+                "gnxxdz": gnxxdz,  # 详细地址（定位）
+                "hsjcjg": "",  # 检测结果
                 "hwcs": "",  # 海外城市
                 "hwgj": "",  # 海外国家
                 "hwxxdz": "",  # 海外详细地址
+                "jrtw": "0",  # 今日体温
+                "jtszdsfzgfx": "0",  # 家庭所在地是否为中高风险地区？
                 "qtbgsx": "",  # 其他需要报告的事项
-                "sffwwhhb": "0",  # 上次填报至今到访高危地区？
-                "sfjcqthbwhry": "0",  # 其他接触高危地区人员的情况描述
-                "sfjcqthbwhrybz": "",  # 其他接触高危地区人员的情况描述
-                "sfjdwhhbry": "0",  # 是否接待过从高危地区来的朋友、亲属或同学
-                "sftjwhjhb": "0",  # 上次填报至今是否途经高危地区？
-                "sftzrychbwhhl": "0",  # 同住人员是否有从高危地区回来的
-                "tccx": "",  # （同程）车厢号
-                "tchbcc": "",  # （同程）航班号/车次
-                "tcjcms": "",  # （同程）接触描述
-                "tcjtfsbz": "",  # （同程）交通方式备注
-                "tcjtfs": "",  # （同程）交通方式
-                "tcyhbwhrysfjc": "0",  # 未进出高危地区但与高危地区人员有接触情况
-                "tczwh": ""  # （同程）座位号
+                "sfhsjc": "0",  # 是否核酸检测？
+                "sftjwhjhb": "0",  # 14天内是否途径中高风险地区或境外返回？
+                "sftzrychbwhhl": "0",  # 本人或共同居住人是否与确诊、疑似、无症状病例行程轨迹有交集？
+                "sjszdsfzgfx": "0",  # 实际所在地是否为中高风险地区？
+                "sjxxdz": "",  # 详细居住地
             }
         })
     }
     logger.debug("data: %s", data['info'])
-    r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/saveYqxx', data=data)
+    r = s.post(
+        'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsMrsb/saveYqxx', data=data)
     logger.debug(r.text)
     j = json.loads(r.text)
+    logger.debug(j)
     if j['isSuccess']:
         logger.info("saveYqxx: Success")
     else:
         logger.error("saveYqxx: Failed")
         sys.exit(1)
-    logger.debug(j)
     return
 
 
