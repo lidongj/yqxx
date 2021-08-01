@@ -64,7 +64,7 @@ def main():
         logger.error('Login failed')
         sys.exit(1)
     logger.info('Login success')
-    r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/csh')
+    r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsMrsb/csh')
     _ = json.loads(r.text)
     if _['isSuccess']:
         module = _['module']
