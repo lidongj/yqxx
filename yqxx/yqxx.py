@@ -93,9 +93,6 @@ def main():
     s.headers.update({
         'User-Agent': ua
     })
-    s.headers.update({
-        'User-Agent': 'Mozilla/5.0 (Linux; Android 10; Redmi K30) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.110 Mobile Safari/537.36'
-    })
     r = s.get('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/common')
     _ = urllib.parse.urlparse(r.url)
     if _.hostname != 'xg.hit.edu.cn':
