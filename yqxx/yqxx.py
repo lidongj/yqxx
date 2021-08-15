@@ -1,6 +1,7 @@
 import argparse
 import json
 import logging
+import random
 import sys
 import urllib
 from datetime import date
@@ -10,6 +11,36 @@ import yaml
 from hit.ids.login import idslogin
 
 logger = logging.getLogger(__name__)
+
+USER_AGENT_LIST = [
+    # OnePlus Nord Dual 5G
+    'Mozilla/5.0 (Linux; Android 10; AC2001) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.101 Mobile Safari/537.36',
+    # Honor V40 Lite 5G
+    'Mozilla/5.0 (Linux; Android 10; ALA-AN70 Build/HONORALA-AN70; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/83.0.4103.106 Mobile Safari/537.36',
+    # Huawei P40 5G
+    'Mozilla/5.0 (Linux; Android 10; ANA-AN00; HMSCore 5.3.0.312) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.93 HuaweiBrowser/11.1.1.300 Mobile Safari/537.36',
+    # Huawei P40 Lite E
+    'Mozilla/5.0 (Linux; Android 10; ART-L29) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/92.0.4515.115 Mobile Safari/537.36',
+    # Honor 10
+    'Mozilla/5.0 (Linux; Android 10; COL-TL10 Build/HUAWEICOL-TL10; wv) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/81.0.4044.145 Mobile Safari/537.36',
+    # OPPO Reno2 Z Dual-SIM
+    'Mozilla/5.0 (Linux; Android 10; CPH1951) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.152 Mobile Safari/537.36',
+    # Huawei Nova 7 Pro w/ HuaweiBrowser
+    'Mozilla/5.0 (Linux; Android 10; HarmonyOS; JER-AN10; HMSCore 5.3.0.312) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/88.0.4324.93 HuaweiBrowser/11.1.2.301 Mobile Safari/537.36',
+    # Redmi K40
+    'Mozilla/5.0 (Linux; Android 11; M2012K11AC) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/77.0.3865.116 Mobile Safari/537.36 EdgA/45.09.4.5079',
+    # OPPO Reno5 Pro(5G)
+    'Mozilla/5.0 (Linux; U; Android 11; zh-cn; PDSM00 Build/RP1A.200720.011) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/70.0.353 Mobile Safari/537.36'
+    # iPhone
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 10_0_2 like Mac OS X) AppleWebKit/602.1.50 (KHTML, like Gecko) Version/10.0 Mobile/14A456 Safari/602.1',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 11_1 like Mac OS X) AppleWebKit/604.3.5 (KHTML, like Gecko) Version/11.0 Mobile/15B93 Safari/604.1',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 12_1_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/12.0 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 13_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.77 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/87.0.4280.77 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_4 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) CriOS/86.0.4240.93 Mobile/15E148 Safari/604.1',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_3 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/30.0 Mobile/15E148 Safari/605.1.15',
+    'Mozilla/5.0 (iPhone; CPU iPhone OS 14_6 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) FxiOS/34.2 Mobile/15E148 Safari/605.1.15',
+]
 
 
 def read_config(filename: str) -> Tuple[str, str, str]:
@@ -54,7 +85,13 @@ def main():
         logger.error('Failed while logging in')
         logger.error(e)
         sys.exit(1)
-    # s = requests.Session()
+    import hashlib
+    h = hashlib.sha1(username.encode())
+    ua = USER_AGENT_LIST[int(h.hexdigest(), 16) % len(USER_AGENT_LIST)]
+    logger.info('''Using '%s' as User-Agent''' % ua)
+    s.headers.update({
+        'User-Agent': ua
+    })
     s.headers.update({
         'User-Agent': 'Mozilla/5.0 (Linux; Android 10; Redmi K30) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.110 Mobile Safari/537.36'
     })
