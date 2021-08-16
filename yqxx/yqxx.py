@@ -99,6 +99,13 @@ def main():
         logger.error('Login failed')
         sys.exit(1)
     logger.info('Login success')
+
+    r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsHome/getZnx', headers={
+        'Referer': 'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsHome'
+    })
+    r.encoding = r.apparent_encoding
+    j = json.loads(r.text)
+    Znx = len(j['module'])
     data = {
         'info': json.dumps({
             "model": data
@@ -114,7 +121,10 @@ def main():
         logger.info("saveYqxx: Success")
     else:
         logger.error("saveYqxx: Failed")
-        sys.exit(1)
+        exit(1)
+    if Znx != 0:
+        logger.error('您有未阅读的消息，请尽快阅读。')
+        exit(1)
     return
 
 
