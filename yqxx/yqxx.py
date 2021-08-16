@@ -93,7 +93,12 @@ def main():
     s.headers.update({
         'User-Agent': ua
     })
-    r = s.get('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/common')
+    s.get('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/loginChange', headers={
+        'Referer': 'https://xg.hit.edu.cn/'
+    })
+    r = s.get('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/common', headers={
+        'Referer': 'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/loginChange'
+    })
     _ = urllib.parse.urlparse(r.url)
     if _.hostname != 'xg.hit.edu.cn':
         logger.error('Login failed')
@@ -113,7 +118,9 @@ def main():
     }
     logger.debug("data: %s", data['info'])
     r = s.post(
-        'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsMrsbNew/save', data=data)
+        'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsMrsbNew/save', data=data, headers={
+            'Referer': 'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsMrsbNew'
+        })
     logger.debug(r.text)
     j = json.loads(r.text)
     logger.debug(j)
