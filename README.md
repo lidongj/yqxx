@@ -118,7 +118,7 @@ kzl17: 1
 # 2 干咳（Dry cough）
 # 3 呼吸困难（Difficulty in breathing）
 # 4 其他（Other symptoms）
-kzl18: 0
+kzl18: '0;'
 
 # 是否到相关医院或门诊检查（Did you go to a hospital or clinic for a check-up?)
 # 0 否
