@@ -131,9 +131,6 @@ kzl19: ''
 # 2 其他（Others）
 kzl20: ''
 
-# 其他（Others）
-kzl34: ''
-
 # 自行采取的救护措施？（Has any medications been taken by oneself?）
 # 0 已口服药物，无其他异常(Already took oarl medication, no other symptoms)
 # 1 未服药物，无其他异常（Didn't take any medications, no other symptoms)
