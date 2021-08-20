@@ -64,6 +64,7 @@ kzl5: ''
 kzl6: '黑龙江省'
 
 # 定位市
+# 直辖市留空
 kzl7: '哈尔滨市'
 
 # 定位区
@@ -173,7 +174,7 @@ kzl28: 0
 # 是否与确诊病例、无症状感染者乘坐同次航班和列车（Has a confirmed or asymptomatic case  been detected in same transportation with you）
 # 0 否（No）
 # 1 是（Yes）
-kzl29: 0
+kzl29: ''
 
 # 请详细说明（Please specify）
 kzl30: ''
@@ -194,6 +195,7 @@ kzl33: '无'
 # 省(名称)
 kzl38: '黑龙江省'
 # 市(名称)
+# 直辖市留空
 kzl39: '哈尔滨市'
 # 区(名称)
 kzl40: '南岗区'
