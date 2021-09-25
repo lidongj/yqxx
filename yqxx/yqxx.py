@@ -131,7 +131,7 @@ def main():
     logger.debug("data: %s", data['info'])
     r = s.post(
         'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsMrsbNew/save', data=data, headers={
-            'Referer': 'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsMrsbNew'
+            'Referer': 'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsMrsbNew/index'
         })
     logger.debug(r.text)
     j = json.loads(r.text)
