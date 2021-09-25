@@ -8,13 +8,13 @@ long_description = (here / 'README.md').read_text(encoding='utf-8')
 
 setup(
     name='yqxx',
-    version='0.5.4',
+    version='0.6.0',
     description='Auto submitter for xg.hit.edu.cn yqxx',
     long_description=long_description,
     long_description_content_type='text/markdown',
-    url='https://github.com/billchenchina/yqxx',
-    author='Billchenchina',
-    author_email='billchenchina2001@gmail.com',
+    url='https://github.com/lidongj/yqxx',
+    author='lidongj',
+    author_email='lidongj@protonmail.com',
     classifiers=[
         'Development Status :: 2 - Pre-Alpha',
         'Intended Audience :: Developers',
@@ -43,9 +43,9 @@ setup(
         ],
     },
     project_urls={
-        'Bug Reports': 'https://github.com/billchenchina/yqxx/issues',
+        'Bug Reports': 'https://github.com/lidongj/yqxx/issues',
         # 'Funding': 'https://donate.pypi.org',
         # 'Say Thanks!': 'http://saythanks.io/to/example',
-        'Source': 'https://github.com/billchenchina/yqxx/',
+        'Source': 'https://github.com/lidongj/yqxx/',
     },
 )

@@ -1,10 +1,10 @@
 # 学工平台每日上报
 
 [![PyPI version](https://img.shields.io/pypi/v/yqxx)](https://pypi.org/project/yqxx/)
-[![GitHub release (latest by date)](https://img.shields.io/github/v/release/billchenchina/yqxx)](https://github.com/billchenchina/yqxx/releases)
-[![GitHub stars](https://img.shields.io/github/stars/billchenchina/yqxx)](https://github.com/billchenchina/yqxx/stargazers)
-[![GitHub forks](https://img.shields.io/github/forks/billchenchina/yqxx)](https://github.com/billchenchina/yqxx/network)
-[![GitHub issues](https://img.shields.io/github/issues/billchenchina/yqxx)](https://github.com/billchenchina/yqxx/issues/)
+[![GitHub release (latest by date)](https://img.shields.io/github/v/release/lidongj/yqxx)](https://github.com/lidongj/yqxx/releases)
+[![GitHub stars](https://img.shields.io/github/stars/lidongj/yqxx)](https://github.com/lidongj/yqxx/stargazers)
+[![GitHub forks](https://img.shields.io/github/forks/lidongj/yqxx)](https://github.com/lidongj/yqxx/network)
+[![GitHub issues](https://img.shields.io/github/issues/lidongj/yqxx)](https://github.com/lidongj/yqxx/issues/)
 
 本项目为命令行填报哈尔滨工业大学[学工平台](https://xg.hit.edu.cn/)[每日上报](https://xg.hit.edu.cn/zhxy-xgzs/xg_yqglxs/xsmrsb)的工具。实现了[统一身份认证登录](http://ids.hit.edu.cn/authserver/login)、获取所有上报信息、按照配置文件自动上报功能。
 
