@@ -85,11 +85,21 @@ def main():
     parser.add_argument('-f', '--force',
                         help='Override previous yqxx if available',
                         action='store_true')
+    parser.add_argument('--yes-i-know-yqxx-enough-go-ahead-please',
+                        help='Know the risks and still confirm to use yqxx',
+                        action='store_true')
     args = parser.parse_args()
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
+    if not args.yes_i_know_yqxx_enough_go_ahead_please:
+        logging.error('''\
+Yqxx could be risky if you don't understand how it works.\
+If you still confirm to use yqxx, please re-run yqxx with:
+    --yes-i-know-yqxx-enough-go-ahead-please
+''')
+        sys.exit(1)
     (username, password, data) = read_config(args.conf_file)
     logger.info('Logging in to xg.hit.edu.cn')
     try:
@@ -140,10 +150,10 @@ def main():
         logger.info("save: Success")
     else:
         logger.error("save: Failed")
-        exit(1)
+        sys.exit(1)
     if Znx != 0:
         logger.error('您有未阅读的消息，请尽快阅读。')
-        exit(1)
+        sys.exit(1)
     return
 
 
