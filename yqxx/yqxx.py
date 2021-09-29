@@ -1,12 +1,14 @@
 import argparse
+import hashlib
 import json
 import logging
-import random
+import re
 import sys
 import urllib
 from datetime import datetime, timedelta, timezone
 from typing import Tuple
 
+import requests
 import yaml
 from hit.ids.login import idslogin
 
@@ -53,7 +55,8 @@ def read_config(filename: str) -> Tuple[str, str, str]:
             "gpswd": float(c["gpswd"]),
             "kzl34": {},
         }
-        restricted_keys = ["jzdz","kzl1","kzl2","kzl3","kzl4","kzl5","kzl6","kzl7","kzl8","kzl9","kzl10","kzl11","kzl12","kzl13","kzl14","kzl15","kzl16","kzl17","kzl18","kzl19","kzl20","kzl21","kzl22","kzl23","kzl24","kzl25","kzl26","kzl27","kzl28","kzl29","kzl30","kzl31","kzl32","kzl33"]
+        restricted_keys = ["jzdz", "kzl1", "kzl2", "kzl3", "kzl4", "kzl5", "kzl6", "kzl7", "kzl8", "kzl9", "kzl10", "kzl11", "kzl12", "kzl13", "kzl14", "kzl15", "kzl16",
+                           "kzl17", "kzl18", "kzl19", "kzl20", "kzl21", "kzl22", "kzl23", "kzl24", "kzl25", "kzl26", "kzl27", "kzl28", "kzl29", "kzl30", "kzl31", "kzl32", "kzl33"]
         for k in restricted_keys:
             ret[k] = str(c[k])
         if "kzl38" not in c:
@@ -65,11 +68,14 @@ def read_config(filename: str) -> Tuple[str, str, str]:
             ret["kzl39"] = str(c["kzl39"])
             ret["kzl40"] = str(c["kzl40"])
         ret = (c['username'], c['password'], ret)
+        assert c['kzl10'] == c['kzl6'] + c['kzl7'] + c['kzl8'] + c['kzl9']
         return ret
     except OSError:
         logger.error('Fail to read configuration from %s', filename)
     except yaml.YAMLError:
         logger.error('Fail to parse YAML')
+    except AssertionError as e:
+        logger.exception(e)
     sys.exit(1)
 
 
@@ -88,18 +94,23 @@ def main():
     parser.add_argument('--yes-i-know-yqxx-enough-go-ahead-please',
                         help='Know the risks and still confirm to use yqxx',
                         action='store_true')
+    parser.add_argument('-s', '--simulate',
+                        help='Run yqxx, but don\'t submit',
+                        action='store_true')
     args = parser.parse_args()
+
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
     else:
         logging.basicConfig(level=logging.INFO)
     if not args.yes_i_know_yqxx_enough_go_ahead_please:
-        logging.error('''
+        logger.error('''
 Yqxx could be risky if you don't understand how it works.
 If you still confirm to use yqxx, please re-run yqxx with:
     --yes-i-know-yqxx-enough-go-ahead-please
 ''')
         sys.exit(1)
+
     (username, password, data) = read_config(args.conf_file)
     logger.info('Logging in to xg.hit.edu.cn')
     try:
@@ -108,13 +119,14 @@ If you still confirm to use yqxx, please re-run yqxx with:
         logger.error('Failed while logging in')
         logger.error(e)
         sys.exit(1)
-    import hashlib
+
     h = hashlib.sha1(username.encode())
     ua = USER_AGENT_LIST[int(h.hexdigest(), 16) % len(USER_AGENT_LIST)]
     logger.info('''Using '%s' as User-Agent''' % ua)
     s.headers.update({
         'User-Agent': ua
     })
+
     s.get('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/shsj/loginChange', headers={
         'Referer': 'https://xg.hit.edu.cn/'
     })
@@ -133,11 +145,28 @@ If you still confirm to use yqxx, please re-run yqxx with:
     r.encoding = r.apparent_encoding
     j = json.loads(r.text)
     Znx = len(j['module'])
+
+    r = s.post('https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xs/getToken/')
+    try:
+        r.raise_for_status()
+        tytoken = r.text.strip()
+        assert re.match(r'^[0-9a-f]+$', tytoken)
+    except (requests.RequestException, AssertionError) as e:
+        logger.error('Failed to getTyToken')
+        logger.error(e)
+        sys.exit(1)
+
     data = {
         'info': json.dumps({
-            "model": data
+            "model": data,
+            "token": tytoken
         })
     }
+
+    if args.simulate:
+        logger.info("data: %s", data['info'])
+        return
+
     logger.debug("data: %s", data['info'])
     r = s.post(
         'https://xg.hit.edu.cn/zhxy-xgzs/xg_mobile/xsMrsbNew/save', data=data, headers={
@@ -155,7 +184,7 @@ If you still confirm to use yqxx, please re-run yqxx with:
         logger.error('您有未阅读的消息，请尽快阅读。')
         sys.exit(1)
     if datetime.now(timezone(timedelta(hours=8))) < datetime.fromisoformat('2021-09-30T20:00:00+08:00'):
-        logging.warning('''
+        logger.warning('''
 Yqxx could be risky if you don't understand how it works.
 This notification will stop displaying after Sep 30, 2021.
 ''')
