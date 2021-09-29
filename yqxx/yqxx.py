@@ -97,6 +97,8 @@ def main():
     parser.add_argument('-s', '--simulate',
                         help='Run yqxx, but don\'t submit',
                         action='store_true')
+    parser.add_argument('-u', '--user-agent',
+                        help='Send User-Agent <USER_AGENT> to server')
     args = parser.parse_args()
 
     if args.debug:
@@ -120,8 +122,11 @@ If you still confirm to use yqxx, please re-run yqxx with:
         logger.error(e)
         sys.exit(1)
 
-    h = hashlib.sha1(username.encode())
-    ua = USER_AGENT_LIST[int(h.hexdigest(), 16) % len(USER_AGENT_LIST)]
+    if args.user_agent is not None:
+        ua = args.user_agent
+    else:
+        h = hashlib.sha1(username.encode())
+        ua = USER_AGENT_LIST[int(h.hexdigest(), 16) % len(USER_AGENT_LIST)]
     logger.info('''Using '%s' as User-Agent''' % ua)
     s.headers.update({
         'User-Agent': ua
