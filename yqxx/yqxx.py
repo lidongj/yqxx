@@ -56,7 +56,7 @@ def read_config(filename: str) -> Tuple[str, str, str]:
             "kzl34": {},
         }
         restricted_keys = ["jzdz", "kzl1", "kzl2", "kzl3", "kzl4", "kzl5", "kzl6", "kzl7", "kzl8", "kzl9", "kzl10", "kzl11", "kzl12", "kzl13", "kzl14", "kzl15", "kzl16",
-                           "kzl17", "kzl18", "kzl19", "kzl20", "kzl21", "kzl22", "kzl23", "kzl24", "kzl25", "kzl26", "kzl27", "kzl28", "kzl29", "kzl30", "kzl31", "kzl32", "kzl33"]
+                           "kzl17", "kzl18", "kzl19", "kzl20", "kzl21", "kzl22", "kzl23", "kzl24", "kzl25", "kzl26", "kzl27", "kzl28", "kzl29", "kzl30", "kzl31", "kzl32", "kzl33", "kzl41"]
         for k in restricted_keys:
             ret[k] = str(c[k])
         if "kzl38" not in c:
