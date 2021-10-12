@@ -67,8 +67,10 @@ def read_config(filename: str) -> Tuple[str, str, str]:
             ret["kzl38"] = str(c["kzl38"])
             ret["kzl39"] = str(c["kzl39"])
             ret["kzl40"] = str(c["kzl40"])
-        ret = (c['username'], c['password'], ret)
         assert c['kzl10'] == c['kzl6'] + c['kzl7'] + c['kzl8'] + c['kzl9']
+        if 'user-agent' in c:
+            ret['user-agent'] = str(c['user-agent'])
+        ret = (c['username'], c['password'], ret)
         return ret
     except OSError:
         logger.error('Fail to read configuration from %s', filename)
@@ -119,11 +121,14 @@ If you still confirm to use yqxx, please re-run yqxx with:
         s = idslogin(username, password)
     except Exception as e:
         logger.error('Failed while logging in')
-        logger.error(e)
+        logger.exception(e)
         sys.exit(1)
 
     if args.user_agent is not None:
         ua = args.user_agent
+    elif 'user-agent' in data:
+        ua = data['user-agent']
+        data.pop('user-agent')
     else:
         h = hashlib.sha1(username.encode())
         ua = USER_AGENT_LIST[int(h.hexdigest(), 16) % len(USER_AGENT_LIST)]
@@ -158,7 +163,7 @@ If you still confirm to use yqxx, please re-run yqxx with:
         assert re.match(r'^[0-9a-f]+$', tytoken)
     except (requests.RequestException, AssertionError) as e:
         logger.error('Failed to getTyToken')
-        logger.error(e)
+        logger.exception(e)
         sys.exit(1)
 
     data = {

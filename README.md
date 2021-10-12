@@ -27,6 +27,9 @@ username: '1234567890'
 # 统一身份认证密码
 password: 'PASSWORD'
 
+# 建议修改为自己 WeLink 的 User-Agent
+user-agent: 'Mozilla/5.0 (Linux; Android 10; AC2001) AppleWebKit/537.36 (KHTML, like Gecko) Version/4.0 Chrome/87.0.4280.101 Mobile Safari/537.36 HuaWei-AnyOffice/1.0.0/cn.edu.hit.welink'
+
 # 经度
 gpsjd: 126.630644
 # 纬度
